@@ -5,8 +5,8 @@ import os, pickle
 from cmd import Cmd
 from painter import paint
 
-from settings import *
-
+from settings.base import GREETING, ERROR_MSG
+from projects.actions import *
 
 def show_logo():
     file = open('logo.txt', 'r')
@@ -60,44 +60,6 @@ class MiniKickstarterPrompt(Cmd):
         print u'Instructions coming soon!'
 
 
-def create_project(args):
-    project_args = args.split()
-    target = project_args[-1]
-
-    # In case user gives their project multiple names
-    final_word = len(project_args)-1
-    name = ' '.join([str(x) for x in project_args[:final_word]])
-
-    print u'Creating a new project named {} with a target price of {}'.format(name, target)
-    new_project = Project(name, target)
-    PROJECT_LIST.append(new_project)
-
-
-class Project():
-    def __init__(self, name, target):
-        self.name = name
-        self.target = target
-
-    def save(self):
-        print u'Saving'
-        try:
-            with open(LOCAL_DATA, 'w') as db:
-                db.write(string_from_data(self.name))
-        except:
-            print u'that did not work'
-
-    def __str__(self):
-        return self.name
-
-
-# def string_from_data(data):
-#     return '\n'.join(data)
-#
-# def data_from_string(s):
-#     return s.split('\n')
-#
-#
-
 # Todo: Move these somewhere more legit
 
 # def save(data, LOCAL_DATA):
@@ -114,25 +76,11 @@ class Project():
 
 
 # utility functions? serializer stuff
-def retrieve(filename):
-    with open(filename) as fh:
-        return data_from_string(fh.read())
-
-def string_from_data(data):
-    return '\n'.join(data)
-
-def data_from_string(s):
-    return s.split('\n')
 
 
 if __name__ == '__main__':
     prompt = MiniKickstarterPrompt()
     prompt.prompt = '> '
-
-    if os.path.isfile(LOCAL_DATA):
-        PROJECT_LIST = retrieve(LOCAL_DATA)
-    else:
-        PROJECT_LIST = []
 
     show_logo()
 

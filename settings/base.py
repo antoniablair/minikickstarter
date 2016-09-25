@@ -1,3 +1,5 @@
+import os
+from utils.utils import retrieve
 from painter import paint
 
 ERROR_MSG = paint.red(u'\nOh dear! That doesn\'t look right.\n')
@@ -8,3 +10,8 @@ GREETING = u'Welcome to Mini Kickstarter!\n' \
            u'type "project <projectname> <targetamount>"\nTo see ' \
            u'instructions, type "instructions"\n' \
            u'For help, type "help"'.format('_'*28)
+
+PROJECT_LIST = []
+
+if os.path.isfile(LOCAL_DATA):
+    PROJECT_LIST = retrieve(LOCAL_DATA)
