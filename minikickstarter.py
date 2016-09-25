@@ -11,11 +11,11 @@ def show_logo():
     logo = file.read()
     print (paint.green(logo))
 
+ERROR_MSG = paint.red(u'\nOh dear! That doesn\'t look right.\n')
 LOCAL_DATA = 'mini_db.txt'
-RUN_LOOP = False
 
 GREETING = u'Welcome to Mini Kickstarter!\n' \
-           u'{}\n\nQUICKSTART:\n\nTo create a project, ' \
+           u'{}\n\nTo create a project, ' \
            u'type "project <projectname> <targetamount>"\nTo see ' \
            u'instructions, type "instructions"\n' \
            u'For help, type "help"'.format('_'*28)
@@ -37,7 +37,12 @@ class MiniKickstarterPrompt(Cmd):
 
     def do_project(self, args):
         """Create a new project using this format: project <project> <target amount>"""
-        create_project(args)
+
+        if len(args) == 0:
+            print ERROR_MSG
+            pass
+        else:
+            create_project(args)
 
     def do_instructions(self, args):
         """Type instructions to view Mini Kickstarter's commands."""
@@ -52,7 +57,7 @@ def create_project(args):
     final_word = len(project_args)-1
     name = ' '.join([str(x) for x in project_args[:final_word]])
 
-    print u'Created a new project named {} with a target price of {}'.format(name, target)
+    print u'Creating a new project named {} with a target price of {}'.format(name, target)
 
 
 
@@ -116,15 +121,12 @@ if __name__ == '__main__':
         PROJECT_LIST = []
 
     show_logo()
-    RUN_LOOP = True
-
-    while RUN_LOOP is True:
-        try:
-            prompt.cmdloop(GREETING)
-        except Exception as e:
-            # This variable prevents the app from shutting itself down after each error
-            RUN_LOOP = False
-            print paint.red(u'\nOh dear! That doesn\'t look right:\n')
-            print u'{}'.format(e)
-            print paint.red(u'\nMaybe you made a typo. Want to try again?\n')
-            RUN_LOOP = True
+    
+    try:
+        prompt.cmdloop(GREETING)
+    except Exception as e:
+        # prevents the app from shutting itself down after each error
+        print ERROR_MSG
+        print u'{}'.format(e)
+        print paint.red(u'\nMaybe you made a typo? Please try again.\n')
+        prompt.cmdloop(GREETING)
