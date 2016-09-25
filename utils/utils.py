@@ -1,3 +1,5 @@
+# todo: Use python's built in serializer
+
 def retrieve(filename):
     with open(filename) as fh:
         return data_from_string(fh.read())

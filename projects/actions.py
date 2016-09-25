@@ -11,4 +11,15 @@ def create_project(args):
 
     print u'Creating a new project named {} with a target price of {}'.format(name, target)
     new_project = Project(name, target)
+
+    # Todo: Put in proper format
     PROJECT_LIST.append(new_project)
+    print PROJECT_LIST
+
+def list_project(name):
+    # Todo: Eliminate this from happening
+    projects = [p for p in PROJECT_LIST if p != '']
+
+    for p in projects:
+        if p.name == name:
+            print u'{} has a target price of {}. It has not yet been backed.'.format(p.name, p.target)
