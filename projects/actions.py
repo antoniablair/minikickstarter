@@ -23,3 +23,17 @@ def list_project(name):
     for p in projects:
         if p.name == name:
             print u'{} has a target price of {}. It has not yet been backed.'.format(p.name, p.target)
+
+def view_all_projects():
+    projects = [p for p in PROJECT_LIST if p != '']
+    print projects
+
+    if len(projects) < 1:
+        print u'There are no current projects.'
+    else:
+        if len(projects) is 1:
+            print u'There is currently 1 project:\n'
+        else:
+            print u'There are currently {} projects:\n'.format(len(actual_projects))
+        for project in projects:
+            print project
