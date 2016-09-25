@@ -12,6 +12,10 @@ def show_logo():
     print (paint.green(logo))
 
 class MiniKickstarterPrompt(Cmd):
+    def do_back(self, args):
+        """Back a project with the format: back <given name> <project> <credit card number> <backing amount>"""
+        back_project(args)
+
     def do_hello(self, args):
         """A greeting."""
         print u'Hello yourself!'
@@ -25,12 +29,15 @@ class MiniKickstarterPrompt(Cmd):
         print u'Instructions coming soon!'
 
     def do_project(self, args):
-        """Create a new project using this format: project <project> <target amount>"""
-        if len(args) == 0:
+        """Create a new project using this format: project <project> <targetamount>"""
+        project_args = args.split()
+
+        if len(project_args) < 2:
             print ERROR_MSG
+            print paint.red(u'Please use the correct format: project <project> <target amount>')
             pass
         else:
-            create_project(args)
+            create_project(project_args)
 
     def do_projects(self, args):
         """To view a list of projects, type 'projects'."""

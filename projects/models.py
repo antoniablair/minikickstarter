@@ -1,7 +1,8 @@
 class Project():
-    def __init__(self, name, target):
+    def __init__(self, name, target, backers):
         self.name = name
         self.target = target
+        self.backers = backers
 
     # def save(self):
     #     print u'Saving'

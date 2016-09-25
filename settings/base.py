@@ -14,4 +14,5 @@ GREETING = u'Welcome to Mini Kickstarter!\n' \
 PROJECT_LIST = []
 
 if os.path.isfile(LOCAL_DATA):
-    PROJECT_LIST = retrieve(LOCAL_DATA)
+    if retrieve(LOCAL_DATA) != ['']:
+        PROJECT_LIST = retrieve(LOCAL_DATA)
