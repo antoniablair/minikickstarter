@@ -5,20 +5,13 @@ import os, pickle
 from cmd import Cmd
 from painter import paint
 
+from settings import *
+
 
 def show_logo():
     file = open('logo.txt', 'r')
     logo = file.read()
     print (paint.green(logo))
-
-ERROR_MSG = paint.red(u'\nOh dear! That doesn\'t look right.\n')
-LOCAL_DATA = 'mini_db.txt'
-
-GREETING = u'Welcome to Mini Kickstarter!\n' \
-           u'{}\n\nTo create a project, ' \
-           u'type "project <projectname> <targetamount>"\nTo see ' \
-           u'instructions, type "instructions"\n' \
-           u'For help, type "help"'.format('_'*28)
 
 class MiniKickstarterPrompt(Cmd):
     def do_hello(self, args):
@@ -47,6 +40,7 @@ class MiniKickstarterPrompt(Cmd):
         """To view a list of projects, type 'projects'."""
 
         actual_projects = [p for p in PROJECT_LIST if p != '']
+        print actual_projects
 
         if len(actual_projects) < 1:
             print u'There are no current projects.'
@@ -57,6 +51,9 @@ class MiniKickstarterPrompt(Cmd):
                 print u'There are currently {} projects:\n'.format(len(actual_projects))
             for project in actual_projects:
                 print project
+
+    def do_list(self, name):
+        """View information about a project with: list <projectname>"""
 
     def do_instructions(self, args):
         """Type instructions to view Mini Kickstarter's commands."""
