@@ -37,12 +37,26 @@ class MiniKickstarterPrompt(Cmd):
 
     def do_project(self, args):
         """Create a new project using this format: project <project> <target amount>"""
-
         if len(args) == 0:
             print ERROR_MSG
             pass
         else:
             create_project(args)
+
+    def do_projects(self, args):
+        """To view a list of projects, type 'projects'."""
+
+        actual_projects = [p for p in PROJECT_LIST if p != '']
+
+        if len(actual_projects) < 1:
+            print u'There are no current projects.'
+        else:
+            if len(actual_projects) is 1:
+                print u'There is currently 1 project:\n'
+            else:
+                print u'There are currently {} projects:\n'.format(len(actual_projects))
+            for project in actual_projects:
+                print project
 
     def do_instructions(self, args):
         """Type instructions to view Mini Kickstarter's commands."""
@@ -53,13 +67,13 @@ def create_project(args):
     project_args = args.split()
     target = project_args[-1]
 
-    # Users may give their project multiple names
+    # In case user gives their project multiple names
     final_word = len(project_args)-1
     name = ' '.join([str(x) for x in project_args[:final_word]])
 
     print u'Creating a new project named {} with a target price of {}'.format(name, target)
-
-
+    new_project = Project(name, target)
+    PROJECT_LIST.append(new_project)
 
 
 class Project():
@@ -74,6 +88,9 @@ class Project():
                 db.write(string_from_data(self.name))
         except:
             print u'that did not work'
+
+    def __str__(self):
+        return self.name
 
 
 # def string_from_data(data):
@@ -121,7 +138,7 @@ if __name__ == '__main__':
         PROJECT_LIST = []
 
     show_logo()
-    
+
     try:
         prompt.cmdloop(GREETING)
     except Exception as e:
