@@ -1,8 +1,15 @@
 class Project():
-    def __init__(self, name, target, backers):
+    def __init__(self, name, target):
         self.name = name
         self.target = target
-        self.backers = backers
+        self.backers = {}
+        self.currently_raised = 0
+
+    def funds_needed(self):
+        print 'inside funds_needed'
+        sum = float(self.target) - float(self.currently_raised)
+        print sum
+        return sum
 
     # def save(self):
     #     print u'Saving'
