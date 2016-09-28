@@ -3,7 +3,7 @@ class Project():
         self.name = name
         self.target = target
         self.backers = {}
-        self.currently_raised = 0
+        self.currently_raised = 0.0
 
     def funds_needed(self):
         print 'inside funds_needed'

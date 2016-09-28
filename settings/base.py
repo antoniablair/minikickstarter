@@ -6,6 +6,7 @@ ERROR_MSG = paint.red(u'\nOh dear! That doesn\'t look right.\n')
 
 LOCAL_DATA = 'mini_db.txt'
 PROJECT_LIST = []
+BACKING_LIST = []
 
 if os.path.isfile(LOCAL_DATA):
     if retrieve(LOCAL_DATA) != ['']:
