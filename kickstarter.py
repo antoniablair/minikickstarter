@@ -5,6 +5,7 @@ from painter import paint
 
 from settings.base import GREETING, ERROR_MSG, SYNTAX_MSG
 from projects.actions import *
+from backings.actions import *
 
 def show_logo():
     file = open('logo.txt', 'r')
