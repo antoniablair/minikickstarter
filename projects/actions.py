@@ -181,9 +181,6 @@ def list_project(name):
     # Todo: Just grab the first
     projects = [p for p in PROJECT_LIST if p.name == name]
 
-    print "What is projects"
-    print projects
-
     if len(projects):
         p = projects[0]
         # print "Projects are : "
@@ -221,6 +218,6 @@ def view_all_projects():
         if len(projects) is 1:
             print u'There is currently 1 project:\n'
         else:
-            print u'There are currently {} projects:\n'.format(len(actual_projects))
+            print u'There are currently {} projects:\n'.format(len(projects))
         for project in projects:
             print project
