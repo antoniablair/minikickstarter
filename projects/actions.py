@@ -1,4 +1,4 @@
-import pickle
+
 import sys
 import sqlite3 as sqlite
 
@@ -20,61 +20,70 @@ def update_cash_needed(project, price):
 
 def create_project(name, target):
 
-    if find_project(name):
-        print u'\nThis project already exists. Please try a different name.'
-    else:
-        print u'\nCreating a new project named {} with a target price of ${}.'.format(name, target)
-        new_project = Project(name, target)
-        # Todo: Serialize
-        pickled_project = pickle.dumps(new_project)
-
-        print pickled_project
-
-        # PROJECT_LIST.append(new_project)
-
-        # Move this
-        try:
-            con = sqlite.connect('test.db')
-            cur = con.cursor()
-            cur.execute("SELECT * FROM projects;")
-            cur.execute("INSERT INTO test(project)values(?);", (project, pickled_project))
-            con.commit()
-
-        except sqlite.Error, e:
-
-            if con:
-                con.rollback()
-
-            print "Error %s:" % e.args[0]
-            sys.exit(1)
-
-        finally:
-            if con:
-                con.close()
+    # if find_project(name):
+    #     print u'\nThis project already exists. Please try a different name.'
+    # else:
+    print u'\nCreating a new project named {} with a target price of ${}.'.format(name, target)
+    new_project = Project(name, target)
+    # Todo: Sanitize data, etc
+    # PROJECT_LIST.append(new_project)
+    # Move this
+    try:
+        con = sqlite.connect('test.db')
+        cur = con.cursor()
+        # cur.execute("SELECT * FROM projects;")
+        cur.execute("INSERT INTO projects (name, target, currently_raised)values(?,?,?);", (name, target, 0))
+        con.commit()
+    except sqlite.Error, e:
+        if con:
+            con.rollback()
+        print "Error %s:" % e.args[0]
+        sys.exit(1)
+    finally:
+        if con:
+            con.close()
 
 
-        # Backers ----------------
-#
-# def create_backer(name, project, card, amount):
-#     backer = Backing(backer_name, project, card, amount)
+def find_row(table, lookup_col, query_word):
+    """
+    Find rows by a query word and return everything inside it as a string.
+    """
+    row = None
+    con = None
 
-# make sure this project hasn't been backed by this card before
-# def lookup_backer(name):
-#     backed_projects = [backer for backer in BACKER_LIST if backer.name == name]
-#
-#     if len(backed_projects):
-#        for each project
-#     else:
-#         print ERROR_MSG
-#         print u'Backer not found: {}\n'.format(name)
-#         return None
+    try:
+        # todo: Fix all the test.dbs everywhere
+        con = sqlite.connect('test.db')
+        cur = con.cursor()
+
+        query_string = u'SELECT * FROM {tn} WHERE {col}=\'{qw}\';'.format(tn=table, col=lookup_col, qw=query_word)
+        print u'The query_string is ' + query_string
+        cur.execute(query_string)
+        row = cur.fetchone()
+        # con.commit()
+        print u'The row returned is: '
+        print row
+    except sqlite.Error, e:
+        # if con:
+        #     con.rollback()
+        print u'This is being called'
+        print "Error %s:" % e.args[0]
+        sys.exit(1)
+
+    finally:
+        if con:
+            con.close()
+            return row
 
 
-# ------------------------------
+def fetch_project(project_name):
+    # project = [p for p in PROJECT_LIST if p.name == name]
+    table = 'projects'
+    lookup_col = 'name'
+    query_word = project_name
 
-
-def fetch_project(name):
-    project = [p for p in PROJECT_LIST if p.name == name]
+    row = find_row(table, lookup_col, query_word)
+    print row
 
     if len(project):
         return project[0]
@@ -84,34 +93,67 @@ def fetch_project(name):
         return None
 
 def find_project(name):
-    project = [p for p in PROJECT_LIST if p.name == name]
+    # project = [p for p in PROJECT_LIST if p.name == name]
+    table = 'projects'
+    lookup_col = 'name'
+    query_word = project_name
+
+    row = find_row(table, lookup_col, query_word)
+    print row
 
     if len(project):
-        return True
+        return project[0]
     else:
-        return False
+        print ERROR_MSG
+        print u'Project not found: {}\n'.format(name)
+        return None
+
+
+    # if len(project):
+    #     return True
+    # else:
+    #     return False
 
 def list_project(name):
     """Retrieve a project from db and display information about its funding status."""
     target = None
     currently_raised = 0
     number_backers = 0
+    con = 0
 
     try:
         # todo: Fix all the test.dbs everywhere
+
+        table = 'projects'
+        lookup_col = 'name'
+        query_word = name
+
         con = sqlite.connect('test.db')
         cur = con.cursor()
 
-        cur.execute("SELECT target, currently_raised FROM projects WHERE name=:name", {"name": name})
-        con.commit()
-        row = cur.fetchone()
+        row = find_row(table, lookup_col, query_word)
+
+        # con = sqlite.connect('test.db')
+        # cur = con.cursor()
+        #
+        # cur.execute("SELECT target, currently_raised FROM projects WHERE name=:name", {"name": name})
+        # con.commit()
+        # row = cur.fetchone()
 
         if row != None:
-            target = row[0]
-            currently_raised = row[1]
+            name = row[0]
+            target = row[1]
+            currently_raised = row[2]
+
+            print 'target is ' + target
+            print 'currently_raised is ' + currently_raised
 
         #     todo: move this to its own special function
             try:
+                print 'Query backup.'
+                con = sqlite.connect('test.db')
+                cur = con.cursor()
+
                 cur.execute("SELECT count(*) FROM backings WHERE project=:project", {"project": name})
                 con.commit()
 
@@ -134,6 +176,7 @@ def list_project(name):
     except sqlite.Error, e:
         if con:
             con.rollback()
+        print 'error here'
         print "Error %s:" % e.args[0]
         sys.exit(1)
 

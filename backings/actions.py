@@ -57,3 +57,25 @@ def back_project(backer, project_name, card, price):
             # todo: save project here
 
 #     Todo: Finish this
+
+
+
+            # Backers ----------------
+
+#
+# def create_backer(name, project, card, amount):
+#     backer = Backing(backer_name, project, card, amount)
+
+# make sure this project hasn't been backed by this card before
+# def lookup_backer(name):
+#     backed_projects = [backer for backer in BACKER_LIST if backer.name == name]
+#
+#     if len(backed_projects):
+#        for each project
+#     else:
+#         print ERROR_MSG
+#         print u'Backer not found: {}\n'.format(name)
+#         return None
+
+
+# ------------------------------
