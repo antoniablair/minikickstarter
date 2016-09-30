@@ -145,9 +145,9 @@ def list_project(name):
             target = row[1]
             currently_raised = row[2]
 
-            print 'target is ' + target
-            print 'currently_raised is ' + currently_raised
-
+            print name
+            print target
+            print currently_raised
         #     todo: move this to its own special function
             try:
                 print 'Query backup.'
