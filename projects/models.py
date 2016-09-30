@@ -9,14 +9,11 @@ class Project():
         self.currently_raised = 0
 
 
-    def update(self, new_currently_raised):
+    def save_or_update(self, new_currently_raised, query_set):
         try:
             con = sqlite.connect('test.db')
             cur = con.cursor()
-
-            print new_currently_raised
-            print self.name
-            qs = u'UPDATE Projects SET currently_raised={} WHERE name=\'{}\''.format(new_currently_raised, self.name)
+            qs = query_set
 
             cur.execute(qs)
 
@@ -32,25 +29,20 @@ class Project():
                 con.close()
 
 
-    def save(self):
-        try:
-            con = sqlite.connect('test.db')
-            cur = con.cursor()
-            qs = u"INSERT INTO {tn} ({cn1}, {cn2}, {cn3}) " \
-                 u"VALUES (\'{name}\',{target},{cr});".format(tn='Projects', cn1 = 'name', cn2 = 'target',
-                                                              cn3 = 'currently_raised', name = self.name,
-                                                              target = self.target, cr = self.currently_raised)
+    def update(self, new_currently_raised):
+        qs = u'UPDATE Projects SET currently_raised={} ' \
+             u'WHERE name=\'{}\''.format(new_currently_raised, self.name)
 
-            cur.execute(qs)
-            con.commit()
-        except sqlite.Error, e:
-            if con:
-                con.rollback()
-            print "Error %s:" % e.args[0]
-            sys.exit(1)
-        finally:
-            if con:
-                con.close()
+        self.save_or_update(new_currently_raised, qs)
+
+
+    def save(self):
+        qs = u"INSERT INTO {tn} ({cn1}, {cn2}, {cn3}) " \
+             u"VALUES (\'{name}\',{target},{cr});".format(tn='Projects', cn1 = 'name', cn2 = 'target',
+                                                          cn3 = 'currently_raised', name = self.name,
+                                                          target = self.target, cr = self.currently_raised)
+
+        self.save_or_update(self.currently_raised, qs)
 
     def __str__(self):
         return self.name
