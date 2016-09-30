@@ -33,11 +33,7 @@ def back_project(backer, project_name, card, price):
 
     project = query_db(query_string, silent=True, fetch_one=True)
 
-    print (u'The project is: ')
-    print project
-
     if project is None or len(project) == None:
-        print u'Lookup error'
         print (LOOKUP_ERROR).format(project_name)
     else:
         query_string=(u'SELECT * FROM BACKINGS WHERE card={} AND project=\'{}\'').format(card, project_name)
@@ -57,9 +53,6 @@ def back_project(backer, project_name, card, price):
             target = project[1]
             new_currently_raised = currently_raised +  price
 
-            print u'New currently raised is: '
-            print new_currently_raised
-
             project = Project(project_name, target)
 
             project.update(new_currently_raised)
@@ -74,7 +67,6 @@ def view_backer(name):
     """View a backer and the projects they have backed."""
     query_string = (u'SELECT * FROM BACKINGS WHERE NAME=\'{n}\';').format(n=name)
 
-    # Todo: Rename this
     backings = query_db(query_string, silent=True, as_dict=True)
 
     if len(backings) == 0:

@@ -72,7 +72,7 @@ def back_project():
     """Backing a project works."""
     prompt = MiniKickstarterPrompt()
     with Capturing() as output:
-        prompt.do_back('Jane Banana 5555555555554444 50')
+        prompt.do_back('Jane My_Project 5555555555554444 50')
     assert_in(u'Success!', output[0])
 
 def view_backer():

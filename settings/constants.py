@@ -1,6 +1,8 @@
 import os, sys
 from painter import paint
 
+# Todo: Change paint.green to alert and paint.red to error
+
 DASHED_LINE = ('_' * 32)
 
 JOKE_Q = u'What\'s the object-oriented way to become wealthy?'

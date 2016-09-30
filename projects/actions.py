@@ -6,8 +6,6 @@ from projects.models import Project
 from settings.constants import DASHED_LINE, ERROR_MSG, LOOKUP_ERROR
 from utils.data import query_db
 
-# Todo: paint.green should be alert
-
 def create_project(name, target):
     if find_project(name):
         print ERROR_MSG
@@ -18,12 +16,12 @@ def create_project(name, target):
         new_project.save()
 #         todo: Sanitize data
 
+# todo: combine these methods
 def get_number_backers(name):
     number_backers = 0
 
     try:
         query_string = "SELECT count(*) FROM Backings WHERE project=\'{}\';".format(name)
-
         result = query_db(query_string, silent=False, fetch_one=True)
 
         if result is not None:
@@ -36,12 +34,10 @@ def get_number_backers(name):
 
     return number_backers
 
-
 def find_project(name):
     """Determines if project exists already"""
 
     qs = 'SELECT * FROM PROJECTS WHERE name=\'{}\''.format(name)
-
     row = query_db(qs)
 
     if row:
@@ -53,7 +49,6 @@ def find_backers(name):
     """Determines if project exists already"""
 
     query_string = 'SELECT * FROM BACKINGS WHERE project=\'{}\''.format(name)
-
     row = query_db(query_string, silent=True, as_dict=True)
 
     if row:
@@ -68,9 +63,9 @@ def list_project(name):
     row = query_db(qs, silent=False, as_dict=False, fetch_one=True)
 
     if row != None:
-        name = row[0]
-        target = row[1]
-        currently_raised = row[2]
+        name = row["name"]
+        target = row["target"]
+        currently_raised = row["currently_raised"]
 
         if target > currently_raised:
             amount_needed = target - currently_raised
