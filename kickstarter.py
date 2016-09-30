@@ -1,5 +1,3 @@
-# install sqlite
-
 import re
 from cmd import Cmd
 from painter import paint
@@ -54,7 +52,6 @@ class MiniKickstarterPrompt(Cmd):
 
     def do_backer(self, name):
         """See what a particular backer has backed with: backer <personname>"""
-        # args = args.split()
         if is_alphanumeric(name):
             # Todo: sanitize
             view_backer(name)

@@ -6,7 +6,6 @@ def query_db(query_string, silent=False, as_dict=False, fetch_one=False):
     con = None
 
     try:
-        # todo: Fix all the test.dbs everywhere
         con = sqlite.connect('test.db')
         if as_dict:
             con.row_factory = sqlite.Row
