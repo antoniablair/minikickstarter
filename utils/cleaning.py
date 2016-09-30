@@ -1,3 +1,4 @@
+import re
 from decimal import Decimal
 
 # Helper functions for syntax and formatting

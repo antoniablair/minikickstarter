@@ -16,11 +16,6 @@ def show_logo():
 
 
 class MiniKickstarterPrompt(Cmd):
-    # def do_count(self, args):
-    #     args = args.split()
-    #     if correct_amount_args(args, 2):
-    #         empty = ''
-    #         query_db(args[0], args[1], empty, query_all=False, count=True)
 
     def do_back(self, args):
         """Back a project with the format: back <given name> <project> <credit card number> <backing amount>"""
@@ -72,7 +67,12 @@ class MiniKickstarterPrompt(Cmd):
 
     def do_instructions(self, args):
         """Type 'instructions' to view Mini Kickstarter's commands."""
-        print u'Instructions coming soon!'
+        print INSTRUCTIONS
+
+    def do_joke(self, args):
+        """A joke."""
+        print u'{}\n'.format(JOKE_Q)
+        print JOKE_A
 
     def do_list(self, name):
         """View information about a project with: list <projectname>"""

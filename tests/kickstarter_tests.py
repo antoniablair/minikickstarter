@@ -6,8 +6,6 @@ from projects.actions import *
 from cStringIO import StringIO
 import sys
 
-PROJECT_LIST = []
-
 class Capturing(list):
     def __enter__(self):
         self._stdout = sys.stdout
@@ -50,7 +48,6 @@ def test_list_project():
     with Capturing() as output:
         prompt.do_list('Banana')
     assert_in(u'Banana has a target goal of $2', output[0])
-
 
 def test_projects():
     prompt = MiniKickstarterPrompt()

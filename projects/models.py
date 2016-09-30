@@ -1,3 +1,4 @@
+from painter import paint
 import sqlite3 as sqlite
 import sys
 
@@ -5,18 +6,11 @@ class Project():
     def __init__(self, name, target):
         self.name = name
         self.target = target
-        self.currently_raised = 0.0
+        self.currently_raised = 0
 
-    def funds_needed(self):
-        print 'inside funds_needed'
-        sum = target - float
-        print sum
-        return sum
 
     def update(self, new_currently_raised):
-        print ('inside update')
         try:
-            print 'in try loop'
             con = sqlite.connect('test.db')
             cur = con.cursor()
 
@@ -37,15 +31,18 @@ class Project():
             if con:
                 con.close()
 
+
     def save(self):
         try:
             con = sqlite.connect('test.db')
             cur = con.cursor()
-            cur.execute("INSERT INTO Projects (name, target, currently_raised)values(?,?,?,);",
-                        (name, target, currently_raised))
+            qs = u"INSERT INTO {tn} ({cn1}, {cn2}, {cn3}) " \
+                 u"VALUES (\'{name}\',{target},{cr});".format(tn='Projects', cn1 = 'name', cn2 = 'target',
+                                                              cn3 = 'currently_raised', name = self.name,
+                                                              target = self.target, cr = self.currently_raised)
 
+            cur.execute(qs)
             con.commit()
-            return True
         except sqlite.Error, e:
             if con:
                 con.rollback()
@@ -54,7 +51,6 @@ class Project():
         finally:
             if con:
                 con.close()
-            return False
 
     def __str__(self):
         return self.name

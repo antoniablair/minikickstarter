@@ -2,7 +2,7 @@ import sqlite3 as sqlite
 
 from backings.models import Backing
 from projects.models import Project
-from settings.base import *
+from settings.constants import *
 
 from utils.data import query_db
 
@@ -29,8 +29,6 @@ def update_project(project_name, new_currently_raised):
 
 def back_project(backer, project_name, card, price):
     """back <given name> <project> <credit card number> <backing amount>"""
-
-    con = sqlite.connect('test.db')
 
     query_string = u'SELECT * FROM PROJECTS WHERE name=\'{}\''.format(project_name)
 
@@ -75,12 +73,6 @@ def back_project(backer, project_name, card, price):
 
 def view_backer(name):
     """View a backer and the projects they have backed."""
-    con = sqlite.connect('test.db')
-    cur = con.cursor()
-
-    backings = None
-    con = None
-
     query_string = (u'SELECT * FROM BACKINGS WHERE NAME=\'{n}\';').format(n=name)
 
     # Todo: Rename this
