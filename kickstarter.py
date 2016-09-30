@@ -72,9 +72,18 @@ class MiniKickstarterPrompt(Cmd):
         if correct_amount_args(args, 4):
             back_project(*args)
 
+    def do_backings(self, args):
+        args = args.split()
+        if correct_amount_args(args, 0):
+            view_all_from_db('Backings')
+
     def do_hello(self, args):
         """A greeting."""
         print u'Hello yourself!'
+
+    def do_instructions(self, args):
+        """Type 'instructions' to view Mini Kickstarter's commands."""
+        print u'Instructions coming soon!'
 
     def do_list(self, name):
         """View information about a project with: list <projectname>"""
@@ -82,10 +91,6 @@ class MiniKickstarterPrompt(Cmd):
             print paint.red(u'Error: Try list <projectname> to view a project.')
         else:
             list_project(name)
-
-    def do_instructions(self, args):
-        """Type 'instructions' to view Mini Kickstarter's commands."""
-        print u'Instructions coming soon!'
 
     def do_project(self, args):
         """Create a new project using this format: project <project> <targetamount>"""
@@ -106,7 +111,7 @@ class MiniKickstarterPrompt(Cmd):
     def do_projects(self, args):
         """To view a list of projects, type 'projects'."""
         if correct_amount_args(args, 0):
-            view_all_projects()
+            view_all_from_db('Projects')
 
     def do_quit(self, args):
         """Quit Mini Kickstarter."""

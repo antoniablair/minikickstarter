@@ -19,7 +19,6 @@ def update_cash_needed(project, price):
     project.target = str(new_price)
 
 def create_project(name, target):
-
     if find_project(name):
         print ERROR_MSG
         print u'\nThis project already exists. Please try a different name.'
@@ -43,11 +42,11 @@ def create_project(name, target):
                 con.close()
 
 
-def find_row(table, lookup_col, query_word):
+def query_db(table, lookup_col, query_word, query_all=False):
     """
-    Find rows by a query word and return everything inside it as a string.
+    Find row(s) by a query word and return everything inside it as a string.
     """
-    row = None
+    rows = None
     con = None
 
     try:
@@ -55,13 +54,14 @@ def find_row(table, lookup_col, query_word):
         con = sqlite.connect('test.db')
         cur = con.cursor()
 
-        query_string = u'SELECT * FROM {tn} WHERE {col}=\'{qw}\';'.format(tn=table, col=lookup_col, qw=query_word)
-        print u'The query_string is ' + query_string
-        cur.execute(query_string)
-        row = cur.fetchone()
-        # con.commit()
-        print u'The row returned is: '
-        print row
+        if query_all == False:
+            query_string = u'SELECT * FROM {tn} WHERE {col}=\'{qw}\';'.format(tn=table, col=lookup_col, qw=query_word)
+            cur.execute(query_string)
+            rows = cur.fetchone()
+        else:
+            query_string = u'SELECT * FROM {tn};'.format(tn=table)
+            cur.execute(query_string)
+            rows = cur.fetchall()
     except sqlite.Error, e:
         # if con:
         #     con.rollback()
@@ -72,36 +72,34 @@ def find_row(table, lookup_col, query_word):
     finally:
         if con:
             con.close()
-            return row
+            return rows
 
 
-def fetch_project(project_name):
-    # project = [p for p in PROJECT_LIST if p.name == name]
-    table = 'projects'
-    lookup_col = 'name'
-    query_word = project_name
-
-    row = find_row(table, lookup_col, query_word)
-    print row
-
-    if len(project):
-        return project[0]
-    else:
-        print ERROR_MSG
-        print u'Project not found: {}\n'.format(name)
-        return None
+# def fetch_project(project_name):
+#     table = 'projects'
+#     lookup_col = 'name'
+#     query_word = project_name
+#
+#     row = find_row(table, lookup_col, query_word)
+#     print row
+#
+#     if len(project):
+#         return project[0]
+#     else:
+#         print ERROR_MSG
+#         print u'Project not found: {}\n'.format(name)
+#         return None
 
 def find_project(name):
+    """Determines if project exists already"""
     table = 'projects'
     lookup_col = 'name'
     query_word = name
 
-    row = find_row(table, lookup_col, query_word)
+    row = query_db(table, lookup_col, query_word)
     if row:
-        print u'Found project'
         return True
     else:
-        print u'Didn\'t find anything'
         return False
 
 
@@ -122,7 +120,7 @@ def list_project(name):
         con = sqlite.connect('test.db')
         cur = con.cursor()
 
-        row = find_row(table, lookup_col, query_word)
+        row = query_db(table, lookup_col, query_word)
 
         if row != None:
             name = row[0]
@@ -180,16 +178,30 @@ def list_project(name):
         if con:
             con.close()
 
+def view_all_from_db(table_name):
+    table = table_name
+    empty = ''
 
-def view_all_projects():
-    projects = [p for p in PROJECT_LIST if p != '']
+    # just removing the s at the end (should actually use a plugin for this)
+    name = table_name.rstrip(table_name[-1:]).lower()
 
-    if len(projects) < 1:
-        print u'There are no current projects. Would you like to start one?'
+    results = query_db(table, empty, empty, query_all=True)
+
+    msg_base = u'\nThere is currently {name} project{s}{punctuation}{optional}'
+
+    if len(results) < 1:
+        print u'\nThere are no current {}s. We\'re counting on you!'.format(name)
     else:
-        if len(projects) is 1:
-            print u'There is currently 1 project:\n'
+        if len(results) is 1:
+            print u'\nThere is currently 1 project:\n'
         else:
-            print u'There are currently {} projects:\n'.format(len(projects))
-        for project in projects:
-            print project
+            print u'\nThere are currently {} {}:\n'.format(len(results), name)
+        for result in results:
+            # Todo: This is fragile! Update to query by name of col and not just by index
+
+            if table == 'Projects':
+                print u'{} - Raised ${} of a ${} goal'.format(result[0], result[2], result[1])
+            else:
+                # print u'{} - Raised ${} of a ${} goal'.format(result[0], result[2], result[1])
+                print u'A backer'
+#                 Todo: Format this
