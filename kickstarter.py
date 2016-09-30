@@ -1,67 +1,19 @@
 # install sqlite
 
-# argparse
-
-import argparse
 import re
 from cmd import Cmd
 from painter import paint
 
 from projects.actions import *
 from backings.actions import *
+from utils.cleaning import *
+from utils.luhn import *
 
 def show_logo():
     file = open('logo.txt', 'r')
     logo = file.read()
     print paint.green(logo)
 
-# Confirm there are enough parameters
-def correct_amount_args(args, expected_args):
-
-    if len(args) != expected_args:
-        print paint.red(u'{}\nPlease make sure you\'re using the right number of variables.').format(ERROR_MSG)
-        return False
-    else:
-        return True
-
-# Todo: Move these
-def remove_dollar_sign(price):
-    if type(price) == str:
-        if price[0] == '$':
-            price = price[1:].replace(",", "")
-        return price
-
-def numbers_are_numeric(args, number_indexes):
-    """Given the index numbers of certain items in a list, makes sure they are numbers."""
-    for number in number_indexes:
-        try:
-            float(args[number])
-        except ValueError:
-            return False
-    return True
-
-def is_numeric(str):
-    """See if string is numeric."""
-    try:
-        float(str)
-    except ValueError:
-        return False
-    return True
-
-def is_alphanumeric(str):
-    if re.match("^[A-Za-z0-9_-]*$", str):
-        return True
-    else:
-        return False
-
-def correct_char_count(str, min, max):
-    chars = len(str)
-    if min <= chars <= max:
-        return True
-    else:
-        return False
-
-# ----------------------------------
 
 class MiniKickstarterPrompt(Cmd):
     # def do_count(self, args):

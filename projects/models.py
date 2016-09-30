@@ -13,14 +13,6 @@ class Project():
         print sum
         return sum
 
-    # def save(self):
-    #     print u'Saving'
-    #     try:
-    #         with open(LOCAL_DATA, 'w') as db:
-    #             db.write(string_from_data(self.name))
-    #     except:
-    #         print u'that did not work'
-
     def update(self, new_currently_raised):
         print ('inside update')
         try:
