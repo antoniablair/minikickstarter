@@ -7,7 +7,6 @@ import re
 from cmd import Cmd
 from painter import paint
 
-from settings.base import GREETING, ERROR_MSG, SYNTAX_MSG
 from projects.actions import *
 from backings.actions import *
 
@@ -65,17 +64,55 @@ def correct_char_count(str, min, max):
 # ----------------------------------
 
 class MiniKickstarterPrompt(Cmd):
+    # def do_count(self, args):
+    #     args = args.split()
+    #     if correct_amount_args(args, 2):
+    #         empty = ''
+    #         query_db(args[0], args[1], empty, query_all=False, count=True)
 
     def do_back(self, args):
         """Back a project with the format: back <given name> <project> <credit card number> <backing amount>"""
         args = args.split()
         if correct_amount_args(args, 4):
-            back_project(*args)
+            backer = args[0]
+            project = args[1]
+            card = args[2]
+            price = args[3]
+
+            price = remove_dollar_sign(price)
+
+            if is_alphanumeric(backer) and correct_char_count(backer, 4, 20):
+                # Add and is no longer than 19 chars
+                if is_numeric(card) and is_luhn_valid(card):
+                    if is_numeric(price):
+                        card = int(card)
+                        price = float(price)
+
+                        back_project(backer, project, card, price)
+                    else:
+                        print SYNTAX_MSG
+                        print u'Please check your price.'
+                else:
+                    print SYNTAX_MSG
+                    print u'Please enter a correct credit card number.'
+            else:
+                print SYNTAX_MSG
+                print u'Please check the name of your backer for formatting.'
 
     def do_backings(self, args):
+        """View the total backings in the database."""
         args = args.split()
         if correct_amount_args(args, 0):
             view_all_from_db('Backings')
+
+    def do_backer(self, name):
+        """See what a particular backer has backed with: backer <personname>"""
+        # args = args.split()
+        if is_alphanumeric(name):
+            # Todo: sanitize
+            view_backer(name)
+        else:
+            print SYNTAX_MSG
 
     def do_hello(self, args):
         """A greeting."""
@@ -122,6 +159,11 @@ class MiniKickstarterPrompt(Cmd):
 if __name__ == '__main__':
     prompt = MiniKickstarterPrompt()
     prompt.prompt = '> '
+
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if not path in sys.path:
+        sys.path.insert(1, path)
+    del path
 
     show_logo()
 

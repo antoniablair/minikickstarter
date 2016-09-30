@@ -1,62 +1,110 @@
-from utils import *
+import sqlite3 as sqlite
+
+from .financial import *
+from backings.models import Backing
+from projects.models import Project
+from settings.base import *
+
+from utils.data import query_db, alt_query
+
+# def fetch_project_dict(name):
+#     row = None
+#
+#     try:
+#         table = 'Projects'
+#         lookup_col = 'name'
+#         query_word = name
+#
+#         con = sqlite.connect('test.db')
+#         con.row_factory = sqlite.Row
+#         cur = con.cursor()
+#         cur.execute("SELECT * FROM Projects")
+#
+#         rows = cur.fetchall()
+#
+#         # row = query_db(table, lookup_col, query_word)
+#         for row in rows:
+#             print row["name"]
+#
+#     except sqlite.Error, e:
+#         if con:
+#             con.rollback()
+#         row = False
+#         print "Error %s:" % e.args[0]
+#         sys.exit(1)
+#
+#     finally:
+#         if con:
+#             con.close()
+#         return row
+
+def update_project(project_name, new_currently_raised):
+    print ('inside update')
+    try:
+        con = sqlite.connect('test.db')
+        cur = con.cursor()
+
+        qs = u'UPDATE Projects SET currently_raised={} WHERE name={}'.format(currently_raised, self.name)
+        print u'This qs is: '
+        print qs
+
+        cur.execute(qs)
+
+        con.commit()
+        # row = cur.fetchone()
+    except sqlite.Error, e:
+        if con:
+            con.rollback()
+        print "Error %s:" % e.args[0]
+        sys.exit(1)
+    finally:
+        if con:
+            con.close()
+
 
 def back_project(backer, project_name, card, price):
     """back <given name> <project> <credit card number> <backing amount>"""
-    project = fetch_project(project_name)
+    # project = fetch_project(project_name)
 
-    CARD_ERROR = paint.red(u'Please enter a correct credit card number.')
+    table = 'Projects'
+    lookup_col = 'name'
 
-    # format numbers (move)
-    # if project is None or not card_is_correct(card):
+    con = sqlite.connect('test.db')
+    cur = con.cursor()
+
+    project = query_db(table, lookup_col, project_name)
+
+
     if project is None:
-        return
-
-    project.currently_raised = float(project.currently_raised)
-    project.target = float(project.target)
-    card = float(card)
-    price = float(price)
-
-    if float(card).is_integer():
-        card = int(card)
+        print (LOOKUP_ERROR).format(project_name)
     else:
-        print CARD_ERROR
-        return
 
-    if not card_is_correct(card):
-        print CARD_ERROR
-        return
 
-    # # Todo: Move into a check parameters function
-    else:
-        backings = [b for b in BACKING_LIST if b.project == project_name and b.card == card]
-        print 'BACKINGS -------'
-        print backings
-        print BACKING_LIST
-        print '//////'
-        if len(backings):
-            print paint.red(u'This card has already been used to back this project.')
-            return
+        query_string=(u'SELECT * FROM BACKINGS WHERE card={} AND project=\'{}\'').format(card, project_name)
+        result = alt_query(query_string, silent=True)
 
+        if result:
+            print paint.red(u'Whoops! This card has already been used to back this project.')
         else:
+
             new_backing = Backing(backer, project_name, card, price)
-            BACKING_LIST.append(new_backing)
-            # new_backing.save()
-            project.currently_raised = project.currently_raised + price
-            # new_funds_needed = funds_needed - price
+            print u'Backing {}...'.format(project_name)
 
-            # Update project
-            # project.funds_needed = new_funds_needed
-            # todo: delete this?
-            project.backers[backer] = price
+            new_backing.save()
 
-            print paint.green(u'This project has now raised ${}.'.format(project.currently_raised))
-            print project.target
-            print type(project.target)
-            if project.currently_raised >= project.target:
-                print paint.green(u'Congratulations on reaching your funding goal!')
-            # todo: save project here
+            # Todo: Fix this to use column name queries
+            currently_raised = project[2]
+            target = project[1]
+            new_currently_raised = currently_raised +  price
 
-#     Todo: Finish this
+            project = Project(project_name, target)
+
+            project.update(new_currently_raised)
+
+            print paint.green(u'Success! This project has now raised ${}.'.format(new_currently_raised))
+
+            if new_currently_raised >= target:
+                print paint.green(u'Hooray, this project has reached its funding goal!')
 
 
 
@@ -79,3 +127,23 @@ def back_project(backer, project_name, card, price):
 
 
 # ------------------------------
+
+
+def view_backer(name):
+    con = sqlite.connect('test.db')
+    cur = con.cursor()
+
+    backings = None
+    con = None
+
+    query_string = (u'SELECT * FROM BACKINGS WHERE NAME=\'{n}\';').format(n=name)
+
+    # Todo: Rename this
+    backings = alt_query(query_string, silent=True, as_dict=True)
+
+    if len(backings) == 0:
+        print (LOOKUP_ERROR).format(name)
+    else:
+        print u'{} has backed:'.format(name)
+        for b in backings:
+            print u'- {} for ${}'.format(b["project"], b["amount"])
