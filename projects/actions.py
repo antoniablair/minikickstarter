@@ -7,7 +7,7 @@ from models import Project
 from backings.actions import *
 from backings.models import Backing
 from painter import paint
-from settings.base import BACKING_LIST, PROJECT_LIST, ERROR_MSG, SYNTAX_MSG
+from settings.base import DASHED_LINE, BACKING_LIST, PROJECT_LIST, ERROR_MSG, SYNTAX_MSG
 
 # Todo: paint.green should be alert
 # paint.red should be for error
@@ -187,15 +187,13 @@ def view_all_from_db(table_name):
 
     results = query_db(table, empty, empty, query_all=True)
 
-    msg_base = u'\nThere is currently {name} project{s}{punctuation}{optional}'
-
     if len(results) < 1:
         print u'\nThere are no current {}s. We\'re counting on you!'.format(name)
     else:
         if len(results) is 1:
             print u'\nThere is currently 1 project:\n'
         else:
-            print u'\nThere are currently {} {}:\n'.format(len(results), name)
+            print u'\nThere are currently {} {}s:\n{}\n'.format(len(results), name, DASHED_LINE)
         for result in results:
             # Todo: This is fragile! Update to query by name of col and not just by index
 

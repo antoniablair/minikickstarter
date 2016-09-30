@@ -7,6 +7,7 @@ ERROR_MSG = paint.red(u'\nOh dear! That doesn\'t look right.\n')
 LOCAL_DATA = 'mini_db.txt'
 PROJECT_LIST = []
 BACKING_LIST = []
+DASHED_LINE = ('_' * 32)
 
 if os.path.isfile(LOCAL_DATA):
     if retrieve(LOCAL_DATA) != ['']:
@@ -19,7 +20,7 @@ HEART = paint.magenta((u'\u2665').encode('utf8'))
 QUICKSTART = u'\n{}\n\nTo create a project, ' \
              u'type "project <projectname> <targetamount>"\nTo see ' \
              u'instructions, type "instructions"\n' \
-             u'For help, type "help"'.format('_' * 32).encode('utf8')
+             u'For help, type "help"'.format(DASHED_LINE).encode('utf8')
 
 GREETING = ' '.join([HEART, WELCOME, HEART, QUICKSTART])
 
