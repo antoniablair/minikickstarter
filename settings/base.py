@@ -12,7 +12,7 @@ if os.path.isfile(LOCAL_DATA):
     if retrieve(LOCAL_DATA) != ['']:
         PROJECT_LIST = retrieve(LOCAL_DATA)
 
-SYNTAX_MSG = paint.red(u'\nMaybe you made a typo? Please check your syntax.\n')
+SYNTAX_MSG = paint.red(u'\nError: Please check your syntax.\n')
 
 WELCOME = u'Welcome to Mini Kickstarter!'.encode('utf8')
 HEART = paint.magenta((u'\u2665').encode('utf8'))

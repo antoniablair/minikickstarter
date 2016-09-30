@@ -1,3 +1,4 @@
+import pickle
 import sys
 import sqlite3 as sqlite
 
@@ -11,40 +12,32 @@ from settings.base import BACKING_LIST, PROJECT_LIST, ERROR_MSG, SYNTAX_MSG
 # Todo: paint.green should be alert
 # paint.red should be for error
 
-# Helper functions for money, numbers and credit cards
-# todo: move these into another directory
-
-# -----------------------------
 
 def update_cash_needed(project, price):
     """Remaining cash needed to meet target goal."""
     new_price = float(project.target) - float(price)
     project.target = str(new_price)
 
-def create_project(project_args):
-    # project_args = args.split()
-    target = project_args[-1]
-
-    # In case user gives their project multiple names
-    # Todo: This allows users to enter in projects with multiple names, but perhaps it should be deleted
-    final_word = len(project_args)-1
-    name = ' '.join([str(x) for x in project_args[:final_word]])
+def create_project(name, target):
 
     if find_project(name):
         print u'\nThis project already exists. Please try a different name.'
     else:
-        target = remove_dollar_sign(target)
         print u'\nCreating a new project named {} with a target price of ${}.'.format(name, target)
         new_project = Project(name, target)
         # Todo: Serialize
-        PROJECT_LIST.append(new_project)
+        pickled_project = pickle.dumps(new_project)
+
+        print pickled_project
+
+        # PROJECT_LIST.append(new_project)
 
         # Move this
         try:
             con = sqlite.connect('test.db')
             cur = con.cursor()
             cur.execute("SELECT * FROM projects;")
-            cur.execute("INSERT INTO projects (name, target, currently_raised)values(?,?);", (name, target, 0))
+            cur.execute("INSERT INTO test(project)values(?);", (project, pickled_project))
             con.commit()
 
         except sqlite.Error, e:
@@ -99,51 +92,55 @@ def find_project(name):
         return False
 
 def list_project(name):
-    # Todo: I Eliminated this empty string project from happening. Can I delete this now??
-    # Todo: Just grab the first
-    projects = [p for p in PROJECT_LIST if p.name == name]
-
-    con = sqlite.connect('test.db')
-
+    """Retrieve a project from db and display information about its funding status."""
+    target = None
     currently_raised = 0
-    with con:
+    number_backers = 0
+
+    try:
+        # todo: Fix all the test.dbs everywhere
+        con = sqlite.connect('test.db')
         cur = con.cursor()
 
         cur.execute("SELECT target, currently_raised FROM projects WHERE name=:name", {"name": name})
         con.commit()
-        target = cur.fetchone()[0]
+        row = cur.fetchone()
 
-        cur.execute("SELECT count(*) FROM backings WHERE project=:project", {"project": name})
-        con.commit()
-        number_backers = cur.fetchall()[0]
-    #     return cursor.fetchone()[0]
+        if row != None:
+            target = row[0]
+            currently_raised = row[1]
 
-    if target:
-        # print "Projects are : "
-        # print projects
-        # print "P is: "
-        # print p
-        # print type(p)
-        # remaining_funds_needed = p.funds_needed()
-        # Todo: Add grammer plugin
-        # print u'{} has a target of ${}'.format(name, target)
-        print u'{} has a target goal of ${}. It has {} backers and ' \
-              u'has currently raised ${}.'.format(name, target, number_backers[0], currently_raised)
+        #     todo: move this to its own special function
+            try:
+                cur.execute("SELECT count(*) FROM backings WHERE project=:project", {"project": name})
+                con.commit()
 
-        # print p.currently_raised
-        # print p.target
-        # print type(p.currently_raised)
-        # print type(p.target)
-        if float(currently_raised) >= float(target):
-            print paint.green(u'This project has reached its funding target! Hooray!')
+                print "Backing info: "
+                print cur.fetchone()
+
+                if cur.fetchone() is not None:
+                    try:
+                        number_backers = cur.fetchall()[0]
+                    except:
+                        number_backers = 0
+            except:
+                number_backers = 0
+
+            print u'{} has a target goal of ${}. It has {} backers and ' \
+                  u'has currently raised ${}.'.format(name, target, number_backers, currently_raised)
+
         else:
-            print u'More funds needed.'
-            print u'This project has raised ${} of its target goal of ${}.'.format(currently_raised, target)
+            print paint.red(u'I can\'t find a project named {}, are you sure it exists?').format(name)
+    except sqlite.Error, e:
+        if con:
+            con.rollback()
+        print "Error %s:" % e.args[0]
+        sys.exit(1)
 
-        # if len(p.backers) > 0:
-        #     print p.backers
-    else:
-        print paint.red(u'I can\'t find a project named {}, are you sure it exists?').format(name)
+    finally:
+        if con:
+            con.close()
+
 
 def view_all_projects():
     projects = [p for p in PROJECT_LIST if p != '']

@@ -1,5 +1,9 @@
 # install sqlite
 
+# argparse
+
+import argparse
+import re
 from cmd import Cmd
 from painter import paint
 
@@ -14,14 +18,14 @@ def show_logo():
 
 # Confirm there are enough parameters
 def correct_amount_args(args, expected_args):
-    if args != expected_args:
+
+    if len(args) != expected_args:
         print paint.red(u'{}\nPlease make sure you\'re using the right number of variables.').format(ERROR_MSG)
         return False
     else:
         return True
 
-# Todo: Remove this
-
+# Todo: Move these
 def remove_dollar_sign(price):
     if type(price) == str:
         if price[0] == '$':
@@ -37,15 +41,36 @@ def numbers_are_numeric(args, number_indexes):
             return False
     return True
 
+def is_numeric(str):
+    """See if string is numeric."""
+    try:
+        float(str)
+    except ValueError:
+        return False
+    return True
+
+def is_alphanumeric(str):
+    if re.match("^[A-Za-z0-9_-]*$", str):
+        return True
+    else:
+        return False
+
+def correct_char_count(str, min, max):
+    chars = len(str)
+    if min <= chars <= max:
+        return True
+    else:
+        return False
+
 # ----------------------------------
 
 class MiniKickstarterPrompt(Cmd):
+
     def do_back(self, args):
         """Back a project with the format: back <given name> <project> <credit card number> <backing amount>"""
-        project_args = args.split()
-
-        if correct_amount_args(len(project_args), 4):
-            back_project(*project_args)
+        args = args.split()
+        if correct_amount_args(args, 4):
+            back_project(*args)
 
     def do_hello(self, args):
         """A greeting."""
@@ -54,26 +79,34 @@ class MiniKickstarterPrompt(Cmd):
     def do_list(self, name):
         """View information about a project with: list <projectname>"""
         if name == '':
-            print paint.red(u'List what?')
+            print paint.red(u'Error: Try list <projectname> to view a project.')
         else:
             list_project(name)
 
     def do_instructions(self, args):
-        """Type instructions to view Mini Kickstarter's commands."""
+        """Type 'instructions' to view Mini Kickstarter's commands."""
         print u'Instructions coming soon!'
 
     def do_project(self, args):
         """Create a new project using this format: project <project> <targetamount>"""
-        project_args = args.split()
+        args = args.split()
 
-        project_args[-1] = remove_dollar_sign(project_args[-1])
+        if correct_amount_args(args, 2):
+            project = args[0]
+            target = remove_dollar_sign(args[-1])
 
-        if correct_amount_args(len(project_args), 2):
-            create_project(project_args)
+            if is_alphanumeric(project) and is_numeric(target) and correct_char_count(project, 4, 20):
+                target = float(target)
+                target = round(target, 2)
+                create_project(project, target)
+            else:
+                # todo: Make these errors more verbose
+                print SYNTAX_MSG
 
     def do_projects(self, args):
         """To view a list of projects, type 'projects'."""
-        view_all_projects()
+        if correct_amount_args(args, 0):
+            view_all_projects()
 
     def do_quit(self, args):
         """Quit Mini Kickstarter."""

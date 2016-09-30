@@ -5,9 +5,10 @@ class Project():
         self.backers = {}
         self.currently_raised = 0.0
 
+    @staticmethod
     def funds_needed(self):
         print 'inside funds_needed'
-        sum = float(self.target) - float(self.currently_raised)
+        sum = target - float
         print sum
         return sum
 
