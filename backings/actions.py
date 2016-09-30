@@ -72,14 +72,16 @@ def back_project(backer, project_name, card, price):
     con = sqlite.connect('test.db')
     cur = con.cursor()
 
-    project = query_db(table, lookup_col, project_name)
+    query_string = u'SELECT * FROM PROJECTS WHERE name=\'{}\''.format(project_name)
 
+    project = alt_query(query_string, silent=True, fetch_one=True)
 
-    if project is None:
+    print (u'The project is: ')
+    print project
+
+    if len(project) == None:
         print (LOOKUP_ERROR).format(project_name)
     else:
-
-
         query_string=(u'SELECT * FROM BACKINGS WHERE card={} AND project=\'{}\'').format(card, project_name)
         result = alt_query(query_string, silent=True)
 
@@ -96,6 +98,9 @@ def back_project(backer, project_name, card, price):
             currently_raised = project[2]
             target = project[1]
             new_currently_raised = currently_raised +  price
+
+            print u'New currently raised is: '
+            print new_currently_raised
 
             project = Project(project_name, target)
 

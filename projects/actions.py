@@ -45,53 +45,16 @@ def create_project(name, target):
 
 def find_project(name):
     """Determines if project exists already"""
-    table = 'projects'
-    lookup_col = 'name'
-    query_word = name
 
-    row = query_db(table, lookup_col, query_word)
+    qs = 'SELECT * FROM PROJECTS WHERE name=\'{}\''.format(name)
+
+    row = alt_query(qs)
+
     if row:
         return True
     else:
         return False
 
-def fetch_project(name):
-    row = None
-
-    try:
-        table = 'Projects'
-        lookup_col = 'name'
-        query_word = name
-
-        con = sqlite.connect('test.db')
-        cur = con.cursor()
-
-        row = query_db(table, lookup_col, query_word)
-        print u'The row is: '
-        print row
-
-        # if row != None:
-        #     name = row[0]
-        #     target = row[1]
-        #     currently_raised = row[2]
-        #
-        #     if target > currently_raised:
-        #         amount_needed = target - currently_raised
-        #         print amount_needed
-        #     else:
-        #         amount_needed = 0
-
-    except sqlite.Error, e:
-        if con:
-            con.rollback()
-        row = False
-        print "Error %s:" % e.args[0]
-        sys.exit(1)
-
-    finally:
-        if con:
-            con.close()
-        return row
 
 def get_number_backers(name):
     number_backers = 0
@@ -140,7 +103,6 @@ def list_project(name):
 
             if target > currently_raised:
                 amount_needed = target - currently_raised
-                print amount_needed
             else:
                 amount_needed = 0
 

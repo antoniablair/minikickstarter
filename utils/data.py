@@ -16,6 +16,7 @@ def query_db(table, lookup_col, query_word, query_all=False):
 
         if query_all == False:
             query_string = u'SELECT * FROM {tn} WHERE {col}=\'{qw}\';'.format(tn=table, col=lookup_col, qw=query_word)
+            print query_string
             cur.execute(query_string)
             rows = cur.fetchone()
         else:
@@ -35,7 +36,7 @@ def query_db(table, lookup_col, query_word, query_all=False):
             return rows
 
 
-def alt_query(query_string, silent=False, as_dict=False):
+def alt_query(query_string, silent=False, as_dict=False, fetch_one=False):
     """Helper function to query the database."""
     result = None
     con = None
@@ -51,7 +52,11 @@ def alt_query(query_string, silent=False, as_dict=False):
         query_string = query_string
         cur.execute(query_string)
 
-        result = cur.fetchall()
+        if fetch_one == True:
+            print 'only fetches one'
+            result = cur.fetchone()
+        else:
+            result = cur.fetchall()
 
     except sqlite.Error, e:
         # if con:
