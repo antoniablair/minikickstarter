@@ -20,28 +20,27 @@ def update_cash_needed(project, price):
 
 def create_project(name, target):
 
-    # if find_project(name):
-    #     print u'\nThis project already exists. Please try a different name.'
-    # else:
-    print u'\nCreating a new project named {} with a target price of ${}.'.format(name, target)
-    new_project = Project(name, target)
-    # Todo: Sanitize data, etc
-    # PROJECT_LIST.append(new_project)
-    # Move this
-    try:
-        con = sqlite.connect('test.db')
-        cur = con.cursor()
-        # cur.execute("SELECT * FROM projects;")
-        cur.execute("INSERT INTO projects (name, target, currently_raised)values(?,?,?);", (name, target, 0))
-        con.commit()
-    except sqlite.Error, e:
-        if con:
-            con.rollback()
-        print "Error %s:" % e.args[0]
-        sys.exit(1)
-    finally:
-        if con:
-            con.close()
+    if find_project(name):
+        print ERROR_MSG
+        print u'\nThis project already exists. Please try a different name.'
+    else:
+        print u'\nCreating a new project named {} with a target price of ${}.'.format(name, target)
+        new_project = Project(name, target)
+
+        # Todo: Sanitize data, etc
+        try:
+            con = sqlite.connect('test.db')
+            cur = con.cursor()
+            cur.execute("INSERT INTO projects (name, target, currently_raised)values(?,?,?);", (name, target, 0))
+            con.commit()
+        except sqlite.Error, e:
+            if con:
+                con.rollback()
+            print "Error %s:" % e.args[0]
+            sys.exit(1)
+        finally:
+            if con:
+                con.close()
 
 
 def find_row(table, lookup_col, query_word):
@@ -93,26 +92,18 @@ def fetch_project(project_name):
         return None
 
 def find_project(name):
-    # project = [p for p in PROJECT_LIST if p.name == name]
     table = 'projects'
     lookup_col = 'name'
-    query_word = project_name
+    query_word = name
 
     row = find_row(table, lookup_col, query_word)
-    print row
-
-    if len(project):
-        return project[0]
+    if row:
+        print u'Found project'
+        return True
     else:
-        print ERROR_MSG
-        print u'Project not found: {}\n'.format(name)
-        return None
+        print u'Didn\'t find anything'
+        return False
 
-
-    # if len(project):
-    #     return True
-    # else:
-    #     return False
 
 def list_project(name):
     """Retrieve a project from db and display information about its funding status."""
@@ -132,13 +123,6 @@ def list_project(name):
         cur = con.cursor()
 
         row = find_row(table, lookup_col, query_word)
-
-        # con = sqlite.connect('test.db')
-        # cur = con.cursor()
-        #
-        # cur.execute("SELECT target, currently_raised FROM projects WHERE name=:name", {"name": name})
-        # con.commit()
-        # row = cur.fetchone()
 
         if row != None:
             name = row[0]
