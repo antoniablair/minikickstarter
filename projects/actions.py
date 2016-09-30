@@ -145,6 +145,14 @@ def list_project(name):
             target = row[1]
             currently_raised = row[2]
 
+            if target > currently_raised:
+                amount_needed = target - currently_raised
+                print "Need to raise: "
+                print amount_needed
+            else:
+                print "No money needed"
+                amount_needed = 0
+
             print name
             print target
             print currently_raised
@@ -171,6 +179,10 @@ def list_project(name):
             print u'{} has a target goal of ${}. It has {} backers and ' \
                   u'has currently raised ${}.'.format(name, target, number_backers, currently_raised)
 
+            if amount_needed != 0:
+                print u'\nThis project needs ${} more to be successful!'.format(amount_needed)
+            else:
+                print paint.green(u'\nThis project has reached its funding goal!')
         else:
             print paint.red(u'I can\'t find a project named {}, are you sure it exists?').format(name)
     except sqlite.Error, e:
