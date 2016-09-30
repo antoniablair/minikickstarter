@@ -25,7 +25,7 @@ To create a project, type 'project <projectname> <targetamount>'
 To lookup a project, type 'list <projectname>
 To back a project, type 'backer <backername> <projectname> <creditcard_number> <amount>'
 To view all backings, type 'backings'\n
-To run tests, type <nose kickstarter_tests.py> in your normal terminal (not in Mini Kickstarter.)
+To run tests, type <nosetests kickstarter_tests.py> in your normal terminal from the tests folder.
 For help, type 'help' or 'help <command>""".format(DASHED_LINE)
 
 GREETING = ' '.join([HEART, WELCOME, HEART, QUICKSTART])

@@ -3,7 +3,6 @@ import sqlite3 as sqlite
 from backings.models import Backing
 from projects.models import Project
 from settings.constants import *
-
 from utils.data import query_db
 
 def update_project(project_name, new_currently_raised):

@@ -14,28 +14,9 @@ def create_project(name, target):
         print u'\nThis project already exists. Please try a different name.'
     else:
         print u'\nCreating a new project named {} with a target price of ${}.'.format(name, target)
-        print target
-        print type(target)
         new_project = Project(name, target)
         new_project.save()
-
-        # Todo: new_project.save()
-
-        # Todo: Sanitize data, etc
-        # try:
-        #     con = sqlite.connect('test.db')
-        #     cur = con.cursor()
-        #     cur.execute("INSERT INTO projects (name, target, currently_raised)values(?,?,?);", (name, target, 0))
-        #     con.commit()
-        # except sqlite.Error, e:
-        #     if con:
-        #         con.rollback()
-        #     print "Error %s:" % e.args[0]
-        #     sys.exit(1)
-        # finally:
-        #     if con:
-        #         con.close()
-
+#         todo: Sanitize data
 
 def get_number_backers(name):
     number_backers = 0

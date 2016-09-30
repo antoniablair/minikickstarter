@@ -1,5 +1,8 @@
 import re
+
 from decimal import Decimal
+from painter import paint
+from settings.constants import ERROR_MSG
 
 # Helper functions for syntax and formatting
 
@@ -32,7 +35,8 @@ def correct_char_count(str, min, max):
 
 # Confirm there are enough parameters
 def correct_amount_args(args, expected_args):
-    if len(args) != expected_args:
+    length = len(args)
+    if length != expected_args:
         print paint.red(u'{}\nPlease make sure you\'re using the right number of variables.').format(ERROR_MSG)
         return False
     else:
