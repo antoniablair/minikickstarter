@@ -62,10 +62,11 @@ def list_project(name):
     qs = 'SELECT * FROM projects WHERE name=\'{}\''.format(name)
     row = query_db(qs, silent=False, as_dict=False, fetch_one=True)
 
+    # todo: This is fragile, update to not use index
     if row != None:
-        name = row["name"]
-        target = row["target"]
-        currently_raised = row["currently_raised"]
+        name = row[0]
+        target = row[1]
+        currently_raised = row[2]
 
         if target > currently_raised:
             amount_needed = target - currently_raised
