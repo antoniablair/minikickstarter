@@ -29,8 +29,8 @@ def back_project(backer, project_name, card, price):
             new_backing.save()
 
             # Todo: Fix this to use column name queries
-            currently_raised = project[2]
-            target = project[1]
+            currently_raised = project['currently_raised']
+            target = project['target']
             new_currently_raised = currently_raised + price
 
             project = Project(project_name, target)
@@ -54,4 +54,4 @@ def view_backer(name):
     else:
         print u'\n{} has backed:'.format(name)
         for b in backings:
-            print u'- {} for ${}'.format(b["project"], b["amount"])
+            print u'- {} for ${}'.format(b['project'], b['amount'])

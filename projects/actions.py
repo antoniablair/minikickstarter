@@ -102,7 +102,7 @@ def list_project(name):
             print u'Backers\n{}'.format(DASHED_LINE)
 
             for b in backers:
-                print u'{} backed {} with ${}'.format(b["name"], name, b["amount"])
+                print u'{} backed {} with ${}'.format(b['name'], name, b['amount'])
 
     else:
         print paint.red(LOOKUP_ERROR).format(name)
@@ -118,11 +118,10 @@ def display_all_results(name, results):
             print u'\nThere are currently {} {}s:\n{}\n'.format(len(results), name, DASHED_LINE)
         for result in results:
 
-            # Todo: This is fragile.. Update to query by name of col and not just by index
             if name == 'projects':
-                print u'{} - Raised ${} of a ${} goal'.format(result[0], result[2], result[1])
+                print u'{} - Raised ${} of a ${} goal'.format(result['name'], result['currently_raised'], result['target'])
             else:
-                print u'{} backed {} with ${}'.format(result[0], result[1], result[3])
+                print u'{} backed {} with ${}'.format(result['name'], result['project'], result['amount'])
 
 
 
