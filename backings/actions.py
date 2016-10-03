@@ -28,7 +28,6 @@ def back_project(backer, project_name, card, price):
 
             new_backing.save()
 
-            # Todo: Fix this to use column name queries
             currently_raised = project['currently_raised']
             target = project['target']
             new_currently_raised = currently_raised + price

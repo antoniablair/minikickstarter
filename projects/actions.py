@@ -7,9 +7,9 @@ from utils.data import query_db
 
 
 def create_project(name, target):
-    if find_project(name):
+    if find_existing(name, 'Projects'):
         print ERROR_MSG
-        print u'\nThis project already exists. Please try a different name.'
+        print u'This project already exists. Please try a different name.'
     else:
         print u'\nCreating a new project named {} with a target price of ${}.'.format(name, target)
         new_project = Project(name, target)
@@ -17,9 +17,7 @@ def create_project(name, target):
 #         todo: Sanitize data
 
 
-# todo: combine these methods
 def get_number_backers(name):
-    number_backers = 0
 
     try:
         qs = ('SELECT count(*) FROM Backings WHERE project=?')
@@ -27,41 +25,33 @@ def get_number_backers(name):
         result = query_db(qs, args=args, silent=False, fetch_one=True)
 
         if result is not None:
-            try:
-                number_backers = result[0]
-            except:
-                number_backers = 0
+            number_backers = result[0]
+        else:
+            number_backers = 0
     except:
         number_backers = 0
 
     return number_backers
 
-# todo: combine these
-def find_project(name):
-    """Determines if project exists already"""
 
-    qs = 'SELECT * FROM PROJECTS WHERE name=?'
-    args = (name, )
+def find_existing(name, table):
+    """Determines if project or backer exists already"""
 
-    row = query_db(qs, args=args)
+    if table == 'Projects':
+        qs = 'SELECT * FROM PROJECTS WHERE name=?'
 
-    if row:
-        return True
     else:
-        return False
+        qs = 'SELECT * FROM BACKINGS WHERE project=?'
 
-
-def find_backers(name):
-    """Determines if project exists already"""
-
-    qs = 'SELECT * FROM BACKINGS WHERE project=?'
     args = (name, )
+    result = query_db(qs, args=args, silent=True)
 
-    row = query_db(qs, args=args, silent=True)
-
-    if row:
-        return row
-    else:
+    try:
+        if table == 'Backings':
+            return result
+        else:
+            return True
+    except KeyError:
         return None
 
 
@@ -84,7 +74,7 @@ def list_project(name):
             amount_needed = 0
 
         number_backers = get_number_backers(name)
-        backers = find_backers(name)
+        backers = find_existing(name, 'Backings')
         s = 's'
 
         if number_backers == 1:
@@ -115,7 +105,7 @@ def display_all_results(name, results):
         if len(results) is 1:
             print u'\nThere is currently 1 project:\n'
         else:
-            print u'\nThere are currently {} {}s:\n{}\n'.format(len(results), name, DASHED_LINE)
+            print u'\nThere are currently {} {}:\n{}\n'.format(len(results), name, DASHED_LINE)
         for result in results:
 
             if name == 'projects':
