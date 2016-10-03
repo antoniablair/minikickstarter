@@ -27,8 +27,7 @@ class MiniKickstarterPrompt(Cmd):
             price = remove_dollar_sign(price)
 
             if is_alphanumeric(backer) and correct_char_count(backer, 4, 20):
-                # Add and is no longer than 19 chars
-                if is_numeric(card) and is_luhn_valid(card):
+                if is_numeric(card) and is_luhn_valid(card) and correct_char_count(card, 0, 19):
                     if is_numeric(price):
                         card = int(card)
                         price = float(price)

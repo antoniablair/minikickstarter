@@ -13,6 +13,7 @@ def correct_char_count(str, min, max):
     else:
         return False
 
+
 def card_is_correct(card):
     try:
         if len(str(card)) < 20 and is_luhn_valid(card):
@@ -20,6 +21,7 @@ def card_is_correct(card):
         return False
     except ValueError:
         return False
+
 
 def convert_to_decimal(str):
     num = Decimal(str)
@@ -42,11 +44,13 @@ def correct_amount_args(args, expected_args):
     else:
         return True
 
+
 def is_alphanumeric(str):
     if re.match("^[A-Za-z0-9_-]*$", str):
         return True
     else:
         return False
+
 
 def is_numeric(str):
     """See if string is numeric."""
@@ -56,10 +60,12 @@ def is_numeric(str):
         return False
     return True
 
+
 def name_is_correct(name):
     if name.isalnum() and 4 <= len(name) <= 20:
         return True
     return False
+
 
 def remove_dollar_sign(price):
     if type(price) == str:

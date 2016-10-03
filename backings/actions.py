@@ -17,8 +17,9 @@ def back_project(backer, project_name, card, price):
     if project is None or len(project) == None:
         print (LOOKUP_ERROR).format(project_name)
     else:
-        query_string=(u'SELECT * FROM BACKINGS WHERE card={} AND project=\'{}\'').format(card, project_name)
-        result = query_db(query_string, silent=True)
+        query_string=(u'SELECT * FROM BACKINGS WHERE card=? AND project=?')
+        args = (card, project_name)
+        result = query_db(query_string, args=args, silent=True)
 
         if result:
             print paint.red(u'Whoops! This card has already been used to back this project.')
@@ -28,6 +29,7 @@ def back_project(backer, project_name, card, price):
 
             new_backing.save()
 
+            # Todo: Fix this to use column name queries
             currently_raised = project['currently_raised']
             target = project['target']
             new_currently_raised = currently_raised + price

@@ -1,4 +1,4 @@
-
+import sqlite3 as sqlite
 from nose.tools import *
 from kickstarter import MiniKickstarterPrompt
 from painter import paint
@@ -19,6 +19,27 @@ class Capturing(list):
 
 def setup():
     prompt = MiniKickstarterPrompt()
+
+    try:
+        con = sqlite.connect('test.db')
+        # if as_dict:
+        con.row_factory = sqlite.Row
+        cur = con.cursor()
+
+        cur.execute("DELETE FROM PROJECTS WHERE NAME='Random';")
+        cur.execute("DELETE FROM BACKINGS WHERE PROJECT='Random';")
+        cur.execute("DELETE FROM BACKINGS WHERE PROJECT='My_Project';")
+
+        con.commit()
+    except sqlite.Error, e:
+        if not silent:
+            print "Error %s:" % e.args[0]
+        sys.exit(1)
+
+    finally:
+        if con:
+            con.close()
+
     with Capturing() as output:
         prompt.do_hello(prompt)
     assert_in(output[0], u'Hello yourself!')
@@ -35,7 +56,8 @@ def test_create_project():
     """Creating a project works."""
     prompt = MiniKickstarterPrompt()
     with Capturing() as output:
-        prompt.do_project('Random_'+str((randint(0,9)))+' 5')
+        prompt.do_project('Random 5')
+        # prompt.do_project('Random_'+str((randint(0,9)))+' 5')
     output = '\n'.join(map(str, output))
     assert_in(u'Creating a new', output)
 
@@ -61,19 +83,19 @@ def test_list_error_msg():
         prompt.do_list('Banana_2')
     assert_in(u'Error', output[0])
 
-def back_project_error():
+def test_back_project_error():
     """Backing a project does not work with error in credit card."""
     prompt = MiniKickstarterPrompt()
     with Capturing() as output:
         prompt.do_back('Jane Banana 5512631313 50')
-    assert_in(u'Error', output[0])
+    assert_in(u'Error', output[1])
 
-def back_project():
+def test_back_project():
     """Backing a project works."""
     prompt = MiniKickstarterPrompt()
     with Capturing() as output:
         prompt.do_back('Jane My_Project 5555555555554444 50')
-    assert_in(u'Success!', output[0])
+    assert_in(u'Backing My_Project', output[0])
 
 def view_backer():
     """Viewing a backer works."""

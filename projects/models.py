@@ -1,6 +1,3 @@
-from painter import paint
-import sqlite3 as sqlite
-import sys
 from utils.data import query_db
 
 class Project():

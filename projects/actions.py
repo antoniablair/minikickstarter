@@ -39,7 +39,6 @@ def find_existing(name, table):
 
     if table == 'Projects':
         qs = 'SELECT * FROM PROJECTS WHERE name=?'
-
     else:
         qs = 'SELECT * FROM BACKINGS WHERE project=?'
 
@@ -50,7 +49,10 @@ def find_existing(name, table):
         if table == 'Backings':
             return result
         else:
-            return True
+            if len(result) == 0:
+                return False
+            else:
+                return True
     except KeyError:
         return None
 
@@ -63,7 +65,9 @@ def list_project(name):
 
     row = query_db(qs, args=args, silent=False, fetch_one=True)
 
-    if row != None:
+    if row is None:
+        print paint.red(LOOKUP_ERROR).format(name)
+    else:
         name = row['name']
         target = row['target']
         currently_raised = row['currently_raised']
@@ -94,9 +98,6 @@ def list_project(name):
             for b in backers:
                 print u'{} backed {} with ${}'.format(b['name'], name, b['amount'])
 
-    else:
-        print paint.red(LOOKUP_ERROR).format(name)
-
 
 def display_all_results(name, results):
     if len(results) < 1:
@@ -109,9 +110,12 @@ def display_all_results(name, results):
         for result in results:
 
             if name == 'projects':
-                print u'{} - Raised ${} of a ${} goal'.format(result['name'], result['currently_raised'], result['target'])
+                print u'{} - Raised ${} of a ${} goal'.format(result['name'],
+                                                              result['currently_raised'],
+                                                              result['target'])
             else:
-                print u'{} backed {} with ${}'.format(result['name'], result['project'], result['amount'])
+                print u'{} backed {} with ${}'.format(result['name'],
+                                                      result['project'], result['amount'])
 
 
 
