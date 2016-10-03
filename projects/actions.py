@@ -1,10 +1,10 @@
-
 from backings.actions import *
 from painter import paint
 
 from projects.models import Project
 from settings.constants import DASHED_LINE, ERROR_MSG, LOOKUP_ERROR
 from utils.data import query_db
+
 
 def create_project(name, target):
     if find_project(name):
@@ -16,13 +16,15 @@ def create_project(name, target):
         new_project.save()
 #         todo: Sanitize data
 
+
 # todo: combine these methods
 def get_number_backers(name):
     number_backers = 0
 
     try:
-        query_string = "SELECT count(*) FROM Backings WHERE project=\'{}\';".format(name)
-        result = query_db(query_string, silent=False, fetch_one=True)
+        qs = ("SELECT count(*) FROM Backings WHERE project=?")
+        args = (name,)
+        result = query_db(query_string, args=args, silent=False, fetch_one=True)
 
         if result is not None:
             try:
@@ -34,39 +36,47 @@ def get_number_backers(name):
 
     return number_backers
 
+# todo: combine these
 def find_project(name):
     """Determines if project exists already"""
 
-    qs = 'SELECT * FROM PROJECTS WHERE name=\'{}\''.format(name)
-    row = query_db(qs)
+    qs = 'SELECT * FROM PROJECTS WHERE name=?'
+    args = (name, )
+
+    row = query_db(qs, args=args)
 
     if row:
         return True
     else:
         return False
 
+
 def find_backers(name):
     """Determines if project exists already"""
 
-    query_string = 'SELECT * FROM BACKINGS WHERE project=\'{}\''.format(name)
-    row = query_db(query_string, silent=True, as_dict=True)
+    qs = 'SELECT * FROM BACKINGS WHERE project=?'
+    args = (name, )
+
+    row = query_db(qs, args=args, silent=True)
 
     if row:
         return row
     else:
         return None
 
+
 def list_project(name):
     """Retrieve a project from db and display information about its funding status."""
 
-    qs = 'SELECT * FROM projects WHERE name=\'{}\''.format(name)
-    row = query_db(qs, silent=False, as_dict=False, fetch_one=True)
+    qs = ('SELECT * FROM projects WHERE name=?')
+    args = (name, )
 
-    # todo: This is fragile, update to not use index
+    row = query_db(qs, args=args, silent=False, fetch_one=True)
+
     if row != None:
-        name = row[0]
-        target = row[1]
-        currently_raised = row[2]
+        name = row['name']
+        target = row['target']
+        currently_raised = row['currently_raised']
 
         if target > currently_raised:
             amount_needed = target - currently_raised
@@ -93,16 +103,8 @@ def list_project(name):
     else:
         print paint.red(LOOKUP_ERROR).format(name)
 
-def view_all_from_db(table_name):
-    table = table_name
 
-    # just removing the s at the end
-    # todo: Update to use pluralizing plugin
-    name = table_name.rstrip(table_name[-1:]).lower()
-
-    query_string = u'SELECT * FROM {}'.format(table)
-    results = query_db(query_string)
-
+def display_all_results(name, results):
     if len(results) < 1:
         print u'\nThere are no current {}s. We\'re counting on you!'.format(name)
     else:
@@ -113,7 +115,10 @@ def view_all_from_db(table_name):
         for result in results:
 
             # Todo: This is fragile.. Update to query by name of col and not just by index
-            if table == 'Projects':
+            if name == 'projects':
                 print u'{} - Raised ${} of a ${} goal'.format(result[0], result[2], result[1])
             else:
                 print u'{} backed {} with ${}'.format(result[0], result[1], result[3])
+
+
+

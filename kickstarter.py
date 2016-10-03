@@ -47,8 +47,10 @@ class MiniKickstarterPrompt(Cmd):
     def do_backings(self, args):
         """View the total backings in the database."""
         args = args.split()
+
         if correct_amount_args(args, 0):
-            view_all_from_db('Backings')
+            results = query_db('SELECT * FROM BACKINGS')
+            display_all_results('backings', results)
 
     def do_backer(self, name):
         """See what a particular backer has backed with: backer <personname>"""
@@ -97,7 +99,8 @@ class MiniKickstarterPrompt(Cmd):
     def do_projects(self, args):
         """To view a list of projects, type 'projects'."""
         if correct_amount_args(args, 0):
-            view_all_from_db('Projects')
+            results = query_db('SELECT * FROM PROJECTS')
+            display_all_results('projects', results)
 
     def do_quit(self, args):
         """Quit Mini Kickstarter."""

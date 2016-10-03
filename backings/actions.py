@@ -5,6 +5,7 @@ from projects.models import Project
 from settings.constants import *
 from utils.data import query_db
 
+
 def update_project(project_name, new_currently_raised):
     """Update a project after it raises more money."""
     try:
@@ -42,7 +43,6 @@ def back_project(backer, project_name, card, price):
         if result:
             print paint.red(u'Whoops! This card has already been used to back this project.')
         else:
-
             new_backing = Backing(backer, project_name, card, price)
             print u'Backing {}...'.format(project_name)
 
@@ -51,10 +51,9 @@ def back_project(backer, project_name, card, price):
             # Todo: Fix this to use column name queries
             currently_raised = project[2]
             target = project[1]
-            new_currently_raised = currently_raised +  price
+            new_currently_raised = currently_raised + price
 
             project = Project(project_name, target)
-
             project.update(new_currently_raised)
 
             print paint.green(u'Success! This project has now raised ${}.'.format(new_currently_raised))
@@ -65,13 +64,14 @@ def back_project(backer, project_name, card, price):
 
 def view_backer(name):
     """View a backer and the projects they have backed."""
-    query_string = (u'SELECT * FROM BACKINGS WHERE NAME=\'{n}\';').format(n=name)
+    qs = (u'SELECT * FROM BACKINGS WHERE NAME=?')
+    args = (name, )
 
-    backings = query_db(query_string, silent=True, as_dict=True)
+    backings = query_db(qs, args=args, silent=True)
 
     if len(backings) == 0:
         print (LOOKUP_ERROR).format(name)
     else:
-        print u'{} has backed:'.format(name)
+        print u'\n{} has backed:'.format(name)
         for b in backings:
             print u'- {} for ${}'.format(b["project"], b["amount"])
