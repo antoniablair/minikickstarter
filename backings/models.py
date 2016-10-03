@@ -1,4 +1,5 @@
 import sqlite3 as sqlite
+from utils.data import query_db
 
 from backings.actions import *
 
@@ -10,21 +11,10 @@ class Backing():
         self.amount = amount
 
     def save(self):
-        try:
-            con = sqlite.connect('test.db')
-            cur = con.cursor()
-            cur.execute("INSERT INTO Backings (name, project, card, amount)values(?,?,?,?);",
-                        (self.name, self.project, self.card, self.amount))
+        qs = ('INSERT INTO Backings (name, project, card, amount) values(?,?,?,?);')
+        args = (self.name, self.project, self.card, self.amount)
 
-            con.commit()
-        except sqlite.Error, e:
-            if con:
-                con.rollback()
-            print "Error %s:" % e.args[0]
-            sys.exit(1)
-        finally:
-            if con:
-                con.close()
+        query_db(qs, args, commit=True)
 
     def __str__(self):
         return u'{} - {}'.format(self.name, self.project)

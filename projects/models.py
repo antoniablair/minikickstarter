@@ -1,6 +1,7 @@
 from painter import paint
 import sqlite3 as sqlite
 import sys
+from utils.data import query_db
 
 class Project():
     def __init__(self, name, target):
@@ -8,41 +9,17 @@ class Project():
         self.target = target
         self.currently_raised = 0
 
-
-    def save_or_update(self, new_currently_raised, query_set):
-        try:
-            con = sqlite.connect('test.db')
-            cur = con.cursor()
-            qs = query_set
-
-            cur.execute(qs)
-
-            con.commit()
-            row = cur.fetchone()
-        except sqlite.Error, e:
-            if con:
-                con.rollback()
-            print "Error %s:" % e.args[0]
-            sys.exit(1)
-        finally:
-            if con:
-                con.close()
-
-
     def update(self, new_currently_raised):
-        qs = u'UPDATE Projects SET currently_raised={} ' \
-             u'WHERE name=\'{}\''.format(new_currently_raised, self.name)
+        qs = ('UPDATE Projects SET currently_raised=? WHERE name=?')
+        args = (new_currently_raised, self.name)
 
-        self.save_or_update(new_currently_raised, qs)
-
+        query_db(qs, args=args, commit=True)
 
     def save(self):
-        qs = u"INSERT INTO {tn} ({cn1}, {cn2}, {cn3}) " \
-             u"VALUES (\'{name}\',{target},{cr});".format(tn='Projects', cn1 = 'name', cn2 = 'target',
-                                                          cn3 = 'currently_raised', name = self.name,
-                                                          target = self.target, cr = self.currently_raised)
-
-        self.save_or_update(self.currently_raised, qs)
+        qs = ('INSERT INTO Projects (name, target, currently_raised) VALUES (?, ?, ?)')
+        args = (self.name, self.target, self.currently_raised)
+        result = query_db(qs, args=args, commit=True)
+        print result
 
     def __str__(self):
         return self.name

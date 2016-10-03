@@ -1,9 +1,13 @@
 import sqlite3 as sqlite
 
-def query_db(query_string, args=None, silent=False, fetch_one=False):
+def query_db(query_string, args=None, silent=False, fetch_one=False, commit=False):
     """Helper function to query the database."""
     result = None
     con = None
+
+    print query_string
+    print '----------------'
+    print args
 
     try:
         con = sqlite.connect('test.db')
@@ -17,10 +21,15 @@ def query_db(query_string, args=None, silent=False, fetch_one=False):
         else:
             cur.execute(query_string)
 
-        if fetch_one == True:
-            result = cur.fetchone()
+        if commit == True:
+            print 'Committing'
+            con.commit()
+
         else:
-            result = cur.fetchall()
+            if fetch_one == True:
+                result = cur.fetchone()
+            else:
+                result = cur.fetchall()
 
     except sqlite.Error, e:
         if not silent:

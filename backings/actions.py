@@ -30,9 +30,10 @@ def update_project(project_name, new_currently_raised):
 def back_project(backer, project_name, card, price):
     """back <given name> <project> <credit card number> <backing amount>"""
 
-    query_string = u'SELECT * FROM PROJECTS WHERE name=\'{}\''.format(project_name)
+    query_string = ('SELECT * FROM PROJECTS WHERE name=?')
+    args = (project_name, )
 
-    project = query_db(query_string, silent=True, fetch_one=True)
+    project = query_db(query_string, args=args, silent=True, fetch_one=True)
 
     if project is None or len(project) == None:
         print (LOOKUP_ERROR).format(project_name)

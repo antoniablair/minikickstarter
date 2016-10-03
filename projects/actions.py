@@ -24,7 +24,7 @@ def get_number_backers(name):
     try:
         qs = ("SELECT count(*) FROM Backings WHERE project=?")
         args = (name,)
-        result = query_db(query_string, args=args, silent=False, fetch_one=True)
+        result = query_db(qs, args=args, silent=False, fetch_one=True)
 
         if result is not None:
             try:
@@ -85,9 +85,13 @@ def list_project(name):
 
         number_backers = get_number_backers(name)
         backers = find_backers(name)
+        s = 's'
 
-        print u'{} has a target goal of ${}. It has {} backers and ' \
-              u'has currently raised ${}.'.format(name, target, number_backers, currently_raised)
+        if number_backers == 1:
+            s = ''
+
+        print u'{} has a target goal of ${}. It has {} backer{} and ' \
+              u'has currently raised ${}.'.format(name, target, number_backers, s, currently_raised)
 
         if amount_needed != 0:
             print u'\nThis project needs ${} more to be successful!'.format(amount_needed)
