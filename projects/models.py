@@ -18,8 +18,7 @@ class Project():
     def save(self):
         qs = ('INSERT INTO Projects (name, target, currently_raised) VALUES (?, ?, ?)')
         args = (self.name, self.target, self.currently_raised)
-        result = query_db(qs, args=args, commit=True)
-        print result
+        query_db(qs, args=args, commit=True)
 
     def __str__(self):
         return self.name

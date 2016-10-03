@@ -22,7 +22,7 @@ def get_number_backers(name):
     number_backers = 0
 
     try:
-        qs = ("SELECT count(*) FROM Backings WHERE project=?")
+        qs = ('SELECT count(*) FROM Backings WHERE project=?')
         args = (name,)
         result = query_db(qs, args=args, silent=False, fetch_one=True)
 

@@ -6,27 +6,6 @@ from settings.constants import *
 from utils.data import query_db
 
 
-def update_project(project_name, new_currently_raised):
-    """Update a project after it raises more money."""
-    try:
-        con = sqlite.connect('test.db')
-        cur = con.cursor()
-
-        query_string = u'UPDATE Projects SET currently_raised={} WHERE name={}'.format(currently_raised, self.name)
-
-        cur.execute(query_string)
-
-        con.commit()
-    except sqlite.Error, e:
-        if con:
-            con.rollback()
-        print "Error %s:" % e.args[0]
-        sys.exit(1)
-    finally:
-        if con:
-            con.close()
-
-
 def back_project(backer, project_name, card, price):
     """back <given name> <project> <credit card number> <backing amount>"""
 

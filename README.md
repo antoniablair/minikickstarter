@@ -6,7 +6,7 @@ To get started, cd into the directory it makes, `minikickstarter`
 Run `pip install -r requirements.txt` for setup. You might want to create a virtualenv
 first. To run the program, type `python minikickstarter.py`
 
-To run a few nose tests, type `nose kickstarter_tests.py` from the top-level directory.
+To run a few nose tests, type `nosetests tests/kickstarter_tests.py` from the top-level directory.
 
 -
 I wrote Mini Kickstarter in Python because I really enjoy working in Python, and I also felt
